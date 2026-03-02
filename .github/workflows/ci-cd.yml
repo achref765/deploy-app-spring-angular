@@ -44,4 +44,4 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-frontend:latest
 
       - name: Test with Docker Compose
-        run: docker compose up -d
+        run: docker compose up -d --build
