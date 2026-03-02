@@ -1,0 +1,48 @@
+name: CI/CD Pipeline Spring Angular MySQL
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest 
+
+    steps:
+     
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+     
+      - name: Connexion à Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./springboot   
+          file: ./springboot/Dockerfile 
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-backend:latest
+
+      - name: Build & Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./angular-app  
+          file: ./angular-app/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-frontend:latest
+
+      - name: Lancement des services avec Docker Compose
+        run: docker-compose up -d
+
+      - name: Vérification des conteneurs
+        run: |
+          echo "Attente de 15 secondes pour le démarrage..."
+          sleep 15
+          docker ps -a
+          # Cette commande liste les conteneurs actifs.
+          # Si le backend ou frontend a crashé, on le verra ici.
