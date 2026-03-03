@@ -1,10 +1,12 @@
 version: "3.3"
 services:
   angular-app:
+    build: ./angular-app
     image: angular-app
     ports:
       - "0.0.0.0:4200:80"      
   spring-boot-app:
+    build: ./springboot/app
     image: spring-app
     ports:
       - "0.0.0.0:8081:8081"
